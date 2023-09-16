@@ -1,4 +1,4 @@
-Object = require "classic"
+Object = require 'libraries.classic.classic'
 
 local PolygonRoom = Object:extend()
 

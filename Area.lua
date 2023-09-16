@@ -21,7 +21,7 @@ function Area:draw()
 end
 
 function Area:addGameObject(gameObjectType, x, y, opts)
-  local opts = opts or {}
+  opts = opts or {}
   local gameObject = _G[gameObjectType](self, x or 0, y or 0, opts)
   table.insert(self.gameObjects, gameObject)
   return gameObject
@@ -29,9 +29,8 @@ end
 
 function Area:getGameObjects(callBack)
   local results = {}
-  
-  for k, e in pairs(self.gameObjects) do
-    if callBack(v) then
+  for _, e in pairs(self.gameObjects) do
+    if callBack() then
       table.insert(results, e)
     end
   end

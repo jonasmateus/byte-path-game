@@ -7,7 +7,6 @@ function CircleRoom:new(x, y, radius, currentTime )
   self.y = y or 0
   self.radius = radius or 0
   self.currentTime =  currentTime
-	
 end
 
 function CircleRoom:draw()

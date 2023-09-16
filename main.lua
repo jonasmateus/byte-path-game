@@ -1,19 +1,18 @@
 Timer = require 'libraries.hump.timer'
-local M = require 'libraries.moses.moses'
 
 StageRoom = require 'StageRoom'
 
 function love.load()
-  love.graphics.setDefaultFilter('nearest')
+  love.graphics.setDefaultFilter('nearest','nearest')
   love.graphics.setLineStyle('rough')
-  love.window.setMode(gw, gh, {resizable=true, vsync=0, minwidth=400, minheight=300})
+  love.window.setMode(gw, gh, {resizable=true, vsync=false, minwidth=400, minheight=300})
   resize(2)
-  timer = Timer()
+  _G.timer = Timer()
 
-  stageRoom = StageRoom()
+  _G.stageRoom = StageRoom()
 
-  rooms = { stageRoom }
-  currentRoom = nil
+  _G.rooms = { stageRoom }
+  _G.currentRoom = nil
 end
 
 function love.update(dt)
@@ -25,72 +24,69 @@ function love.draw()
   if currentRoom then currentRoom:draw() end
 end
 
-function addRoom(roomType, roomName, ...)
+function _G.addRoom(roomType, roomName, ...)
     local room = _G[roomType](roomName, ...)
     rooms[roomName] = room
     return room
 end
 
-function gotoRoom(roomType, roomName, ...)
+function _G.gotoRoom(roomType, roomName, ...)
   if currentRoom and rooms[roomName] then
     if currentRoom.deactivate then currentRoom:deactivate() end
-    currentRoom = rooms[roomName]
+    _G.currentRoom = rooms[roomName]
     if currentRoom.activate then currentRoom:activate() end
-  else currentRoom = addRoom(roomType, roomName, ...) end
+  else _G.currentRoom = addRoom(roomType, roomName, ...) end
 end
 
 function love.keypressed(key)
   if key == 'return' then gotoRoom('StageRoom', 'stageRoom') end
 end
 
-function resize(s)
-  love.window.setMode(s*gw, s*gh) 
-  sx, sy = s, s
+function _G.resize(s)
+  love.window.setMode(s*gw, s*gh)
+  _G.sx, _G.sy = s, s
 end
 
 function love.run()
-    if love.math then
-	love.math.setRandomSeed(os.time())
-    end
+  if love.math then
+    love.math.setRandomSeed(os.time())
+  end
 
-    if love.load then love.load(arg) end
+  if love.load then love.load() end
 
-    -- We don't want the first frame's dt to include time taken by love.load.
-    if love.timer then love.timer.step() end
+  -- We don't want the first frame's dt to include time taken by love.load.
+  if love.timer then love.timer.step() end
 
-    local dt = 0
+  local dt = 0
 
-    -- Main loop time.
-    while true do
-        -- Process events.
-        if love.event then
+  -- Main loop time.
+  while true do
+    if love.event then
 	    love.event.pump()
 	    for name, a,b,c,d,e,f in love.event.poll() do
-	        if name == 'quit' then
-		    if not love.quit or not love.quit() then
-		        return a
-		    end
-	        end
-		love.handlers[name](a,b,c,d,e,f)
-	    end
+        if name == "quit" then
+          if not love.quit or not love.quit() then
+            return a
+          end
         end
+        love.handlers[name](a,b,c,d,e,f)
+	    end
+    end
 
-	-- Update dt, as we'll be passing it to update
-	if love.timer then
+    if love.timer then
 	    love.timer.step()
 	    dt = love.timer.getDelta()
-	end
+  	end
+    -- Call update and draw
+	  if love.update then love.update(dt) end -- will pass 0 if love.timer is disabled
 
-	-- Call update and draw
-	if love.update then love.update(dt) end -- will pass 0 if love.timer is disabled
-
-	if love.graphics and love.graphics.isActive() then
+    if love.graphics and love.graphics.isActive() then
 	    love.graphics.clear(love.graphics.getBackgroundColor())
 	    love.graphics.origin()
-            if love.draw then love.draw() end
+      if love.draw then love.draw() end
 	    love.graphics.present()
-	end
+	  end
 
-	if love.timer then love.timer.sleep(0.001) end
-    end
+    if love.timer then love.timer.sleep(0.001) end
+  end
 end
