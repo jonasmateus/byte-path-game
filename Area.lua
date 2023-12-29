@@ -1,5 +1,6 @@
 Object = require 'libraries.classic.classic'
 Area = Object:extend()
+Physics = require 'libraries.windfield.windfield'
 
 function Area:new(room)
   self.room = room
@@ -15,9 +16,14 @@ function Area:update(dt)
 end
 
 function Area:draw()
-  for _, gameObject in ipairs(self.gameObjects) do
-    gameObject:draw(self.room.x, self.room.y)
+  --if self.world then self.world:draw() end
+  for _, game_object in ipairs(self.gameObjects) do
+    game_object:draw()
   end
+end
+
+function Area:addPhysicsWorld()
+  self.world = Physics.newWorld(0, 0, true)
 end
 
 function Area:addGameObject(gameObjectType, x, y, opts)

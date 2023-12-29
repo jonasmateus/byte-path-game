@@ -1,5 +1,5 @@
 Timer = require 'libraries.hump.timer'
-
+Input = require 'libraries.boipushy.Input'
 StageRoom = require 'StageRoom'
 
 function love.load()
@@ -8,6 +8,10 @@ function love.load()
   love.window.setMode(gw, gh, {resizable=true, vsync=false, minwidth=400, minheight=300})
   resize(2)
   _G.timer = Timer()
+
+  _G.input = Input()
+  input:bind('left', 'left')
+  input:bind('right', 'right')
 
   _G.stageRoom = StageRoom()
 
