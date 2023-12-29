@@ -1,6 +1,6 @@
 Timer = require 'libraries.hump.timer'
 Input = require 'libraries.boipushy.Input'
-StageRoom = require 'StageRoom'
+StageRoom = require 'src.StageRoom'
 
 function love.load()
   love.graphics.setDefaultFilter('nearest','nearest')
